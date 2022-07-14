@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserClubMapper">
+    
+    <resultMap type="UserClub" id="UserClubResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="clubId"    column="club_id"    />
+        <result property="userRole"    column="user_role"    />
+        <result property="sort"    column="sort"    />
+    </resultMap>
+
+    <sql id="selectUserClubVo">
+        select id, user_id, club_id, user_role, sort from user_club
+    </sql>
+
+    <select id="selectUserClubList" parameterType="UserClub" resultMap="UserClubResult">
+        <include refid="selectUserClubVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="clubId != null "> and club_id = #{clubId}</if>
+            <if test="userRole != null  and userRole != ''"> and user_role = #{userRole}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserClubById" parameterType="Long" resultMap="UserClubResult">
+        <include refid="selectUserClubVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertUserClub" parameterType="UserClub" useGeneratedKeys="true" keyProperty="id">
+        insert into user_club
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="clubId != null">club_id,</if>
+            <if test="userRole != null and userRole != ''">user_role,</if>
+            <if test="sort != null">sort,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="clubId != null">#{clubId},</if>
+            <if test="userRole != null and userRole != ''">#{userRole},</if>
+            <if test="sort != null">#{sort},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserClub" parameterType="UserClub">
+        update user_club
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="clubId != null">club_id = #{clubId},</if>
+            <if test="userRole != null and userRole != ''">user_role = #{userRole},</if>
+            <if test="sort != null">sort = #{sort},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserClubById" parameterType="Long">
+        delete from user_club where id = #{id}
+    </delete>
+
+    <delete id="deleteUserClubByIds" parameterType="String">
+        delete from user_club where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

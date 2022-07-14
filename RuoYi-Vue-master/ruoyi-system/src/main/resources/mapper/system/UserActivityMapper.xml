@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserActivityMapper">
+    
+    <resultMap type="UserActivity" id="UserActivityResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="activityId"    column="activity_id"    />
+        <result property="remarks"    column="remarks"    />
+    </resultMap>
+
+    <sql id="selectUserActivityVo">
+        select id, user_id, activity_id, remarks from user_activity
+    </sql>
+
+    <select id="selectUserActivityList" parameterType="UserActivity" resultMap="UserActivityResult">
+        <include refid="selectUserActivityVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="activityId != null "> and activity_id = #{activityId}</if>
+            <if test="remarks != null  and remarks != ''"> and remarks = #{remarks}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserActivityById" parameterType="Long" resultMap="UserActivityResult">
+        <include refid="selectUserActivityVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertUserActivity" parameterType="UserActivity" useGeneratedKeys="true" keyProperty="id">
+        insert into user_activity
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="activityId != null">activity_id,</if>
+            <if test="remarks != null">remarks,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="activityId != null">#{activityId},</if>
+            <if test="remarks != null">#{remarks},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserActivity" parameterType="UserActivity">
+        update user_activity
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="activityId != null">activity_id = #{activityId},</if>
+            <if test="remarks != null">remarks = #{remarks},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserActivityById" parameterType="Long">
+        delete from user_activity where id = #{id}
+    </delete>
+
+    <delete id="deleteUserActivityByIds" parameterType="String">
+        delete from user_activity where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
