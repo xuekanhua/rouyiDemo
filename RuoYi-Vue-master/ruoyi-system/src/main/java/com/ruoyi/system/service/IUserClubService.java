@@ -1,6 +1,8 @@
 package com.ruoyi.system.service;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.ruoyi.system.domain.UserClub;
 
 /**
@@ -9,8 +11,11 @@ import com.ruoyi.system.domain.UserClub;
  * @author ruoyi
  * @date 2022-07-14
  */
-public interface IUserClubService 
+public interface IUserClubService extends IService<UserClub>
 {
+
+    public int updateUserClubByUserIds(Long[] ids);
+
     /**
      * 查询用户社团
      * 
@@ -58,4 +63,6 @@ public interface IUserClubService
      * @return 结果
      */
     public int deleteUserClubById(Long id);
+
+    public int updateUserClubByClubIds(Long[] ids);
 }

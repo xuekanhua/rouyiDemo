@@ -2,6 +2,9 @@ package com.ruoyi.web.controller.system;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.system.service.IMessageService;
+import com.ruoyi.system.service.IUserClubService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +36,12 @@ public class ClubController extends BaseController
 {
     @Autowired
     private IClubService clubService;
+
+    @Autowired
+    private IUserClubService userClubService;
+
+    @Autowired
+    private IMessageService messageService;
 
     /**
      * 查询社团管理列表
@@ -93,12 +102,17 @@ public class ClubController extends BaseController
 
     /**
      * 删除社团管理
+     * 社团内成员清零 delete user_club where club_id (表里没有deleted)
+     * 文章清零 update message deleted=1 where club_id
      */
     @PreAuthorize("@ss.hasPermi('system:club:remove')")
     @Log(title = "社团管理", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {
+        userClubService.updateUserClubByClubIds(ids);
+        messageService.updateMessageByClubIds(ids);
+
         return toAjax(clubService.deleteClubByIds(ids));
     }
 }

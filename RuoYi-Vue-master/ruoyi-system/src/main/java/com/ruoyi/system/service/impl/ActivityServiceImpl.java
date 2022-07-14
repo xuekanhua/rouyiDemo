@@ -2,11 +2,14 @@ package com.ruoyi.system.service.impl;
 
 import java.util.List;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.system.domain.UserActivity;
+import com.ruoyi.system.mapper.UserActivityMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.system.mapper.ActivityMapper;
 import com.ruoyi.system.domain.Activity;
 import com.ruoyi.system.service.IActivityService;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 活动管理Service业务层处理
@@ -19,6 +22,9 @@ public class ActivityServiceImpl implements IActivityService
 {
     @Autowired
     private ActivityMapper activityMapper;
+
+    @Autowired
+    private UserActivityMapper userActivityMapper;
 
     /**
      * 查询活动管理
@@ -51,11 +57,17 @@ public class ActivityServiceImpl implements IActivityService
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertActivity(Activity activity)
     {
+        activity.setUpdateTime(DateUtils.getNowDate());
         activity.setCreateTime(DateUtils.getNowDate());
-
-        return activityMapper.insertActivity(activity);
+        activityMapper.insertActivity(activity);
+        UserActivity userActivity = new UserActivity();
+        userActivity.setActivityId(activity.getId());
+        userActivity.setUserId(activity.getCreateUser());
+        userActivity.setRemarks("活动举办人");
+        return userActivityMapper.insertUserActivity(userActivity);
     }
 
     /**

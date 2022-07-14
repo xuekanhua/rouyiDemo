@@ -54,6 +54,8 @@ public class MessageServiceImpl implements IMessageService
     public int insertMessage(Message message)
     {
         message.setCreateTime(DateUtils.getNowDate());
+        message.setUpdateTime(DateUtils.getNowDate());
+
         return messageMapper.insertMessage(message);
     }
 
@@ -66,6 +68,7 @@ public class MessageServiceImpl implements IMessageService
     @Override
     public int updateMessage(Message message)
     {
+
         message.setUpdateTime(DateUtils.getNowDate());
         return messageMapper.updateMessage(message);
     }
@@ -92,5 +95,11 @@ public class MessageServiceImpl implements IMessageService
     public int deleteMessageById(Long id)
     {
         return messageMapper.deleteMessageById(id);
+    }
+
+
+    @Override
+    public int updateMessageByClubIds(Long[] ids) {
+        return messageMapper.updateMessageByClubIds(ids);
     }
 }

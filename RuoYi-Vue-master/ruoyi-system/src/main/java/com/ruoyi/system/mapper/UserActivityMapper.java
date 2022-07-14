@@ -11,6 +11,7 @@ import com.ruoyi.system.domain.UserActivity;
  */
 public interface UserActivityMapper 
 {
+
     /**
      * 查询用户活动
      * 
@@ -58,4 +59,9 @@ public interface UserActivityMapper
      * @return 结果
      */
     public int deleteUserActivityByIds(Long[] ids);
+
+    public int deleteUserActivityByUserIds(Long[] userIds);
+
+    public int deleteUserActivityByActivityIds(Long[] ids);
+
 }

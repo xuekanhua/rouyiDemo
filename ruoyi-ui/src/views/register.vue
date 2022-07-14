@@ -29,7 +29,7 @@
           <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
-      <el-form-item prop="code" v-if="captchaOnOff">
+      <!-- <el-form-item prop="code" v-if="captchaOnOff">
         <el-input
           v-model="registerForm.code"
           auto-complete="off"
@@ -42,7 +42,7 @@
         <div class="register-code">
           <img :src="codeUrl" @click="getCode" class="register-code-img"/>
         </div>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item style="width:100%;">
         <el-button
           :loading="loading"
@@ -101,25 +101,25 @@ export default {
           { required: true, trigger: "blur", message: "请再次输入您的密码" },
           { required: true, validator: equalToPassword, trigger: "blur" }
         ],
-        code: [{ required: true, trigger: "change", message: "请输入验证码" }]
+        // code: [{ required: true, trigger: "change", message: "请输入验证码" }]
       },
       loading: false,
       captchaOnOff: true
     };
   },
   created() {
-    this.getCode();
+    // this.getCode();
   },
   methods: {
-    getCode() {
-      getCodeImg().then(res => {
-        this.captchaOnOff = res.captchaOnOff === undefined ? true : res.captchaOnOff;
-        if (this.captchaOnOff) {
-          this.codeUrl = "data:image/gif;base64," + res.img;
-          this.registerForm.uuid = res.uuid;
-        }
-      });
-    },
+    // getCode() {
+    //   getCodeImg().then(res => {
+    //     this.captchaOnOff = res.captchaOnOff === undefined ? true : res.captchaOnOff;
+    //     if (this.captchaOnOff) {
+    //       this.codeUrl = "data:image/gif;base64," + res.img;
+    //       this.registerForm.uuid = res.uuid;
+    //     }
+    //   });
+    // },
     handleRegister() {
       this.$refs.registerForm.validate(valid => {
         if (valid) {

@@ -90,4 +90,14 @@ public class UserActivityServiceImpl implements IUserActivityService
     {
         return userActivityMapper.deleteUserActivityById(id);
     }
+
+    @Override
+    public int deleteUserActivityByUserIds(Long[] userIds) {
+        return userActivityMapper.deleteUserActivityByUserIds(userIds);
+    }
+
+    @Override
+    public int deleteUserActivityByActivityIds(Long[] ids) {
+        return userActivityMapper.deleteUserActivityByActivityIds(ids);
+    }
 }

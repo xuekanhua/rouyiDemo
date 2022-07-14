@@ -34,6 +34,9 @@ public class UserActivityController extends BaseController
     @Autowired
     private IUserActivityService userActivityService;
 
+
+
+
     /**
      * 查询用户活动列表
      */

@@ -2,6 +2,8 @@ package com.ruoyi.system.mapper;
 
 import java.util.List;
 import com.ruoyi.system.domain.UserClub;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 用户社团Mapper接口
@@ -9,7 +11,8 @@ import com.ruoyi.system.domain.UserClub;
  * @author ruoyi
  * @date 2022-07-14
  */
-public interface UserClubMapper 
+@Mapper
+public interface UserClubMapper extends BaseMapper<UserClub>
 {
     /**
      * 查询用户社团
@@ -58,4 +61,9 @@ public interface UserClubMapper
      * @return 结果
      */
     public int deleteUserClubByIds(Long[] ids);
+
+
+    public int deleteUserClubByUserIds(Long[] ids);
+
+    public int deleteUserClubByClubIds(Long[] ids);
 }

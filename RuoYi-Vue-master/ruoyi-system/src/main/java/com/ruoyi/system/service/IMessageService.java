@@ -58,4 +58,6 @@ public interface IMessageService
      * @return 结果
      */
     public int deleteMessageById(Long id);
+
+    public int updateMessageByClubIds(Long[] ids);
 }

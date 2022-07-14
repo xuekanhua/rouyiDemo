@@ -63,4 +63,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+    <delete id="deleteUserActivityByActivityIds" parameterType="String">
+        delete from user_activity where user_activity.activity_id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <update id="deleteUserActivityByUserIds" parameterType="String">
+        delete from user_activity where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
 </mapper>

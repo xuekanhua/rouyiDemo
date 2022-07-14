@@ -1,6 +1,8 @@
 package com.ruoyi.system.service.impl;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.system.mapper.UserClubMapper;
@@ -14,10 +16,19 @@ import com.ruoyi.system.service.IUserClubService;
  * @date 2022-07-14
  */
 @Service
-public class UserClubServiceImpl implements IUserClubService 
+public class UserClubServiceImpl extends ServiceImpl<UserClubMapper, UserClub> implements IUserClubService
 {
     @Autowired
     private UserClubMapper userClubMapper;
+
+
+    //TODO 更新身份为已退出社团
+    @Override
+    public int updateUserClubByUserIds(Long[] ids) {
+        return userClubMapper.deleteUserClubByUserIds(ids);
+    }
+
+    public int updateUserClubByClubIds(Long[] ids){return userClubMapper.deleteUserClubByClubIds(ids);}
 
     /**
      * 查询用户社团
@@ -52,8 +63,6 @@ public class UserClubServiceImpl implements IUserClubService
     @Override
     public int insertUserClub(UserClub userClub)
     {
-        userClub.setUserRole("申请加入");
-        userClub.setSort(999L);
         return userClubMapper.insertUserClub(userClub);
     }
 

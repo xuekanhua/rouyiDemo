@@ -2,8 +2,11 @@ package com.ruoyi.web.controller.system;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.system.service.IUserActivityService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -33,6 +36,9 @@ public class ActivityController extends BaseController
 {
     @Autowired
     private IActivityService activityService;
+
+    @Autowired
+    private IUserActivityService userActivityService;
 
     /**
      * 查询活动管理列表
@@ -97,8 +103,11 @@ public class ActivityController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:activity:remove')")
     @Log(title = "活动管理", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
+    @Transactional
     public AjaxResult remove(@PathVariable Long[] ids)
     {
+        userActivityService.deleteUserActivityByActivityIds(ids);
+
         return toAjax(activityService.deleteActivityByIds(ids));
     }
 }

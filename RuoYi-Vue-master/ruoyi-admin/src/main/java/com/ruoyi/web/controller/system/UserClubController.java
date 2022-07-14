@@ -1,12 +1,16 @@
 package com.ruoyi.web.controller.system;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.system.domain.UserClub;
+import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.system.service.IUserClubService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +31,13 @@ public class UserClubController extends BaseController {
     @Autowired
     private IUserClubService userClubService;
 
+    private ISysUserService userService;
+
+    /**
+     * 申请加入l
+     * @param userClub
+     * @return
+     */
     @PostMapping("/join")
     public AjaxResult joinClub(@RequestBody UserClub userClub) {
         userClub.setUserRole("申请加入");

@@ -58,4 +58,8 @@ public interface IUserActivityService
      * @return 结果
      */
     public int deleteUserActivityById(Long id);
+
+    public int deleteUserActivityByUserIds(Long[] userIds);
+
+    public int deleteUserActivityByActivityIds(Long[] ids);
 }

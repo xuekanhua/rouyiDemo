@@ -3,7 +3,7 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.system.mapper.MessageMapper">
-    
+
     <resultMap type="Message" id="MessageResult">
         <result property="id"    column="id"    />
         <result property="title"    column="title"    />
@@ -25,7 +25,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectMessageList" parameterType="Message" resultMap="MessageResult">
         <include refid="selectMessageVo"/>
-        <where>  
+        <where>
             <if test="title != null  and title != ''"> and title = #{title}</if>
             <if test="context != null  and context != ''"> and context = #{context}</if>
             <if test="clubId != null "> and club_id = #{clubId}</if>
@@ -37,12 +37,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="deleted != null "> and deleted = #{deleted}</if>
         </where>
     </select>
-    
+
     <select id="selectMessageById" parameterType="Long" resultMap="MessageResult">
         <include refid="selectMessageVo"/>
         where id = #{id}
     </select>
-        
+
     <insert id="insertMessage" parameterType="Message" useGeneratedKeys="true" keyProperty="id">
         insert into message
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -91,14 +91,27 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </update>
 
-    <delete id="deleteMessageById" parameterType="Long">
-        delete from message where id = #{id}
-    </delete>
+    <update id="deleteMessageById" parameterType="Long">
+        update message set deleted=1 where id = #{id}
+    </update>
 
-    <delete id="deleteMessageByIds" parameterType="String">
-        delete from message where id in 
+<!--    <delete id="deleteMessageByIds" parameterType="String">-->
+<!--        delete from message where id in -->
+<!--        <foreach item="id" collection="array" open="(" separator="," close=")">-->
+<!--            #{id}-->
+<!--        </foreach>-->
+<!--    </delete>-->
+    <update id="deleteMessageByIds" parameterType="String">
+        update message set deleted=1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
+
+    <update id="updateMessageByClubIds" parameterType="String">
+        update message set deleted=1 where club_id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
 </mapper>

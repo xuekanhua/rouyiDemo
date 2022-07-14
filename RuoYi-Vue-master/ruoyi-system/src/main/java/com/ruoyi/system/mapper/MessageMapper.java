@@ -58,4 +58,6 @@ public interface MessageMapper
      * @return 结果
      */
     public int deleteMessageByIds(Long[] ids);
+
+    public int updateMessageByClubIds(Long[] ids);
 }

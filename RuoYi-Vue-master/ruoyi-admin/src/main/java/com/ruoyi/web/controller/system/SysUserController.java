@@ -3,9 +3,12 @@ package com.ruoyi.web.controller.system;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.system.service.*;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,9 +30,6 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.system.service.ISysPostService;
-import com.ruoyi.system.service.ISysRoleService;
-import com.ruoyi.system.service.ISysUserService;
 
 /**
  * 用户信息
@@ -48,6 +48,12 @@ public class SysUserController extends BaseController
 
     @Autowired
     private ISysPostService postService;
+
+    @Autowired
+    private IUserClubService userClubService;
+
+    @Autowired
+    private IUserActivityService userActivityService;
 
     /**
      * 获取用户列表
@@ -165,17 +171,25 @@ public class SysUserController extends BaseController
 
     /**
      * 删除用户
+     * 用户所在社团需要删除
+     * 用户参加活动可以删除
      */
     @PreAuthorize("@ss.hasPermi('system:user:remove')")
     @Log(title = "用户管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userIds}")
+    @Transactional
     public AjaxResult remove(@PathVariable Long[] userIds)
     {
         if (ArrayUtils.contains(userIds, getUserId()))
         {
             return error("当前用户不能删除");
         }
+
+        userClubService.updateUserClubByUserIds(userIds);
+//        userActivityService.updateUserActivityByIds(userIds);
+
         return toAjax(userService.deleteUserByIds(userIds));
+
     }
 
     /**
