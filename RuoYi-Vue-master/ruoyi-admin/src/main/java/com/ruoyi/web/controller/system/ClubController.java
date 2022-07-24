@@ -1,12 +1,18 @@
 package com.ruoyi.web.controller.system;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.system.domain.dto.ClubDto;
 import com.ruoyi.system.service.IMessageService;
+import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.system.service.IUserClubService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -43,16 +49,32 @@ public class ClubController extends BaseController
     @Autowired
     private IMessageService messageService;
 
+    @Autowired
+    private ISysUserService userService;
+
     /**
      * 查询社团管理列表
      */
     @PreAuthorize("@ss.hasPermi('system:club:list')")
     @GetMapping("/list")
+    @Transactional
     public TableDataInfo list(Club club)
     {
         startPage();
         List<Club> list = clubService.selectClubList(club);
-        return getDataTable(list);
+
+        List<ClubDto> listDto = list.stream().map((item) -> {
+            ClubDto clubDto = new ClubDto();
+            BeanUtils.copyProperties(item, clubDto);
+            SysUser user = userService.selectUserById(clubDto.getCreateUser());
+            if (user != null) {
+                user.setPassword(null);
+                clubDto.setUserEntity(user);
+            }
+            return clubDto;
+        }).collect(Collectors.toList());
+
+        return getDataTable(listDto);
     }
 
     /**
@@ -73,9 +95,19 @@ public class ClubController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:club:query')")
     @GetMapping(value = "/{id}")
+    @Transactional
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
-        return AjaxResult.success(clubService.selectClubById(id));
+        Club club = clubService.selectClubById(id);
+        ClubDto clubDto = new ClubDto();
+        BeanUtils.copyProperties(club, clubDto);
+        SysUser user = userService.selectUserById(clubDto.getCreateUser());
+        if (user != null) {
+            user.setPassword(null);
+            clubDto.setUserEntity(user);
+        }
+
+        return AjaxResult.success(clubDto);
     }
 
     /**

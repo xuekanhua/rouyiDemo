@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ruoyi.system.domain.UserClub;
+import com.ruoyi.system.domain.dto.UserClubDto;
 
 /**
  * 用户社团Service接口
@@ -31,6 +32,14 @@ public interface IUserClubService extends IService<UserClub>
      * @return 用户社团集合
      */
     public List<UserClub> selectUserClubList(UserClub userClub);
+
+    /**
+     * 查询用户社团列表
+     *
+     * @param userClub 用户社团
+     * @return 用户社团集合
+     */
+//    public List<UserClubDto> selectUserClubListDto(UserClub userClub);
 
     /**
      * 新增用户社团

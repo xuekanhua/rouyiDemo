@@ -1,9 +1,18 @@
 package com.ruoyi.web.controller.system;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.system.domain.Club;
+import com.ruoyi.system.domain.Message;
+import com.ruoyi.system.domain.dto.ActivityDto;
+import com.ruoyi.system.domain.dto.MessageDto;
+import com.ruoyi.system.service.IClubService;
+import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.system.service.IUserActivityService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,16 +49,43 @@ public class ActivityController extends BaseController
     @Autowired
     private IUserActivityService userActivityService;
 
+    @Autowired
+    private IClubService clubService;
+
+    @Autowired
+    private ISysUserService userService;
+
     /**
      * 查询活动管理列表
      */
     @PreAuthorize("@ss.hasPermi('system:activity:list')")
     @GetMapping("/list")
+    @Transactional
     public TableDataInfo list(Activity activity)
     {
         startPage();
         List<Activity> list = activityService.selectActivityList(activity);
-        return getDataTable(list);
+        List<ActivityDto> listDto = list.stream().map((item) -> {
+            ActivityDto activityDto = new ActivityDto();
+            BeanUtils.copyProperties(item, activityDto);
+            SysUser createUser = userService.selectUserById(item.getCreateUser());
+            if (createUser != null) {
+                createUser.setPassword(null);
+                activityDto.setCreateUserEntity(createUser);
+            }
+            SysUser updateUser = userService.selectUserById(item.getUpdateUser());
+            if (updateUser != null) {
+                updateUser.setPassword(null);
+                activityDto.setUpdateUserEntity(updateUser);
+            }
+            Club club = clubService.selectClubById(item.getClubId());
+            if (club != null) {
+                activityDto.setClubEntity(club);
+            }
+            return activityDto;
+        }).collect(Collectors.toList());
+
+        return getDataTable(listDto);
     }
 
     /**
@@ -70,9 +106,30 @@ public class ActivityController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:activity:query')")
     @GetMapping(value = "/{id}")
+    @Transactional
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
-        return AjaxResult.success(activityService.selectActivityById(id));
+        Activity activity = activityService.selectActivityById(id);
+
+        ActivityDto activityDto = new ActivityDto();
+        BeanUtils.copyProperties(activity, activityDto);
+        SysUser createUser = userService.selectUserById(activityDto.getCreateUser());
+        if (createUser != null) {
+            createUser.setPassword(null);
+            activityDto.setCreateUserEntity(createUser);
+        }
+        SysUser updateUser = userService.selectUserById(activityDto.getUpdateUser());
+        if (updateUser != null) {
+            updateUser.setPassword(null);
+            activityDto.setUpdateUserEntity(updateUser);
+        }
+        Club club = clubService.selectClubById(activityDto.getClubId());
+        if (club != null) {
+            activityDto.setClubEntity(club);
+        }
+
+
+        return AjaxResult.success(activityDto);
     }
 
     /**

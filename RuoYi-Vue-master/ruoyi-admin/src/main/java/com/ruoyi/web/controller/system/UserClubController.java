@@ -9,15 +9,21 @@ import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.system.domain.Club;
 import com.ruoyi.system.domain.UserClub;
+import com.ruoyi.system.domain.dto.UserClubDto;
+import com.ruoyi.system.service.IClubService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.system.service.IUserClubService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 用户社团Controller
@@ -31,7 +37,12 @@ public class UserClubController extends BaseController {
     @Autowired
     private IUserClubService userClubService;
 
+    @Autowired
+    private IClubService clubService;
+
+    @Autowired
     private ISysUserService userService;
+
 
     /**
      * 申请加入l
@@ -52,10 +63,26 @@ public class UserClubController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:userClub:list')")
     @GetMapping("/list")
+    @Transactional
     public TableDataInfo list(UserClub userClub) {
         startPage();
         List<UserClub> list = userClubService.selectUserClubList(userClub);
-        return getDataTable(list);
+        List<UserClubDto> listDto = list.stream().map((item) -> {
+            UserClubDto userClubDto = new UserClubDto(item);
+            Club club = clubService.selectClubById(item.getClubId());
+            if (club != null) {
+                userClubDto.setClubEntity(club);
+            }
+            SysUser user = userService.selectUserById(item.getUserId());
+            if (user != null) {
+                user.setPassword(null);
+                userClubDto.setUserEntity(user);
+            }
+
+            return userClubDto;
+        }).collect(Collectors.toList());
+
+        return getDataTable(listDto);
     }
 
     /**
@@ -75,8 +102,18 @@ public class UserClubController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:userClub:query')")
     @GetMapping(value = "/{id}")
+    @Transactional
     public AjaxResult getInfo(@PathVariable("id") Long id) {
-        return AjaxResult.success(userClubService.selectUserClubById(id));
+        UserClub userClub = userClubService.selectUserClubById(id);
+        UserClubDto userClubDto = new UserClubDto(userClub);
+        SysUser user = userService.selectUserById(userClubDto.getUserId());
+        if(user != null) {
+            user.setPassword(null);
+            userClubDto.setUserEntity(user);
+        }
+        userClubDto.setClubEntity(clubService.selectClubById(userClubDto.getClubId()));
+
+        return AjaxResult.success(userClubDto);
     }
 
     /**
